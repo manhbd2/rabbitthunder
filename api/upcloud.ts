@@ -50,7 +50,7 @@ export default async (req: any, res: any) => {
 
   console.log("key : ", process.env.KEY);
   if (key !== process.env.KEY) {
-    return res.status(200).end();
+    return res.status(400).end(`No key provided`)
   }
 
   const isProd = process.env.NODE_ENV === 'production';
