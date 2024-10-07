@@ -47,7 +47,8 @@ export default async (req: any, res: any) => {
   
   const id = body.id;
   const isProd = process.env.NODE_ENV === 'production'
-
+  console.log("env : ", process.env.NODE_ENV);
+  
   // create browser based on ENV
   let browser;
   if (isProd) {
@@ -68,7 +69,7 @@ export default async (req: any, res: any) => {
   await page.setRequestInterception(true);
 
   // Set headers,else wont work.
-  await page.setExtraHTTPHeaders({ 'Referer': 'https://myflixerz.to/' });
+  await page.setExtraHTTPHeaders({ 'Referer': 'https://flixhq.to/' });
   
   const logger:string[] = [];
   const finalResponse:{source:string,subtitle:string[]} = {source:'',subtitle:[]}
@@ -85,7 +86,7 @@ export default async (req: any, res: any) => {
   try {
     const [req] = await Promise.all([
       page.waitForRequest(req => req.url().includes('.m3u8'), { timeout: 20000 }),
-      page.goto(`https://megacloud.tube/embed-1/e-1/0m3Rs5ZEzfPM?z=&_debug=true`, { waitUntil: 'domcontentloaded' }),
+      page.goto(`https://premiumembeding.cloud/v2/embed-4/8bB0uPPP4WgS?z=&_debug=true`, { waitUntil: 'domcontentloaded' }),
     ]);
   } catch (error) {
     return res.status(500).end(`Server Error,check the params.`)
