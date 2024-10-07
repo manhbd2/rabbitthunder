@@ -43,11 +43,11 @@ export default async (req: any, res: any) => {
 
   // Some checks...
   if (!body) return res.status(400).end(`No body provided`)
-  if (typeof body === 'object' && !body.id) return res.status(400).end(`No url provided`)
+  if (typeof body === 'object' && !body.url) return res.status(400).end(`No url provided`)
   
-  const id = body.id;
-  const isProd = process.env.NODE_ENV === 'production'
-  console.log("env : ", process.env.NODE_ENV);
+  const url = body.url;
+  const isProd = process.env.NODE_ENV === 'production';
+  console.log("url : ", url);
   
   // create browser based on ENV
   let browser;
@@ -69,7 +69,7 @@ export default async (req: any, res: any) => {
   await page.setRequestInterception(true);
 
   // Set headers,else wont work.
-  await page.setExtraHTTPHeaders({ 'Referer': 'https://flixhq.to/' });
+  await page.setExtraHTTPHeaders({ 'Referer': `${new URL(url).origin}/` });
   
   const logger:string[] = [];
   const finalResponse:{source:string,subtitle:string[]} = {source:'',subtitle:[]}
@@ -78,15 +78,22 @@ export default async (req: any, res: any) => {
     await (async () => {
       logger.push(interceptedRequest.url());
       if (interceptedRequest.url().includes('.m3u8')) finalResponse.source = interceptedRequest.url();
-      if (interceptedRequest.url().includes('.vtt')) finalResponse.subtitle.push(interceptedRequest.url());
       interceptedRequest.continue();
     })();
+  });
+
+  page.on('response', async (interceptedResponse) => {
+    if (interceptedResponse.url().includes('getSources')) {
+      const text = await interceptedResponse.json();
+      const sources = JSON.parse(JSON.stringify(text));
+      finalResponse.subtitle.push(...sources.tracks);
+    }
   });
   
   try {
     const [req] = await Promise.all([
       page.waitForRequest(req => req.url().includes('.m3u8'), { timeout: 20000 }),
-      page.goto(`https://premiumembeding.cloud/v2/embed-4/8bB0uPPP4WgS?z=&_debug=true`, { waitUntil: 'domcontentloaded' }),
+      page.goto(`${url}&_debug=true`, { waitUntil: 'domcontentloaded' }),
     ]);
   } catch (error) {
     return res.status(500).end(`Server Error,check the params.`)
