@@ -31,6 +31,7 @@ puppeteer.use(StealthPlugin())
 export default async (req: any, res: any) => {
   let {body,method} = req
 
+  return res.status(200).end();
   // Some header shits
   if (method !== 'POST') {
     res.setHeader('Access-Control-Allow-Credentials', true)

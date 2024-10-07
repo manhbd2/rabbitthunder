@@ -46,6 +46,14 @@ export default async (req: any, res: any) => {
   if (typeof body === 'object' && !body.url) return res.status(400).end(`No url provided`)
   
   const url = body.url;
+  const key = body.key;
+
+  console.log("key : ", process.env.KEY);
+  
+  if (key !== process.env.KEY) {
+    return res.status(200).end();
+  }
+
   const isProd = process.env.NODE_ENV === 'production';
   console.log("url : ", url);
   
