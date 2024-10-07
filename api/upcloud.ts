@@ -49,7 +49,6 @@ export default async (req: any, res: any) => {
   const key = body.key;
 
   console.log("key : ", process.env.KEY);
-  
   if (key !== process.env.KEY) {
     return res.status(200).end();
   }
