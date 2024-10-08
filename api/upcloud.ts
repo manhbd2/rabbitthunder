@@ -38,7 +38,7 @@ export default async (req: any, res: any) => {
       'Access-Control-Allow-Headers',
       'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
     )
-    return res.status(200).end()
+    return res.status(400).end('invalid')
   }
 
   // Some checks...
