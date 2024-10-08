@@ -48,14 +48,12 @@ export default async (req: any, res: any) => {
   const url = body.url;
   const key = body.key;
 
-  console.log("key : ", process.env.KEY);
   if (key !== process.env.KEY) {
     return res.status(400).end(`No key provided`)
   }
 
   const isProd = process.env.NODE_ENV === 'production';
-  console.log("url : ", url);
-  
+
   // create browser based on ENV
   let browser;
   if (isProd) {
@@ -79,7 +77,7 @@ export default async (req: any, res: any) => {
   await page.setExtraHTTPHeaders({ 'Referer': `${new URL(url).origin}/` });
   
   const logger:string[] = [];
-  const finalResponse:{source:string,subtitle:string[]} = {source:'',subtitle:[]}
+  const finalResponse:{source:string,subtitles:string[]} = {source:'',subtitles:[]}
   
   page.on('request', async (interceptedRequest) => {
     await (async () => {
@@ -93,7 +91,7 @@ export default async (req: any, res: any) => {
     if (interceptedResponse.url().includes('getSources')) {
       const text = await interceptedResponse.json();
       const sources = JSON.parse(JSON.stringify(text));
-      finalResponse.subtitle.push(...sources.tracks);
+      finalResponse.subtitles.push(...sources.tracks);
     }
   });
   
